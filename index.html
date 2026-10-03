@@ -6,137 +6,153 @@
 <title>DF Pools</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef7fb;
+    color:#123;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #eef7fb;
-    color: #17324d;
+header{
+    background:#087ea4;
+    color:white;
+    padding:18px;
+    text-align:center;
 }
 
-header {
-    background: linear-gradient(135deg, #0077b6, #00b4d8);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 3px 10px #0003;
+header h1{
+    margin:0;
+    font-size:28px;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 30px;
+header p{
+    margin:5px 0 0;
+    opacity:.9;
 }
 
-header p {
-    margin: 5px 0 0;
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:15px;
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 15px;
+.card{
+    background:white;
+    border-radius:15px;
+    padding:16px;
+    margin-bottom:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
-.resumen {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 15px;
+.stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-.tarjeta {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 8px #0002;
+.stat{
+    padding:15px;
+    border-radius:12px;
+    background:#e8f6fb;
 }
 
-.tarjeta strong {
-    display: block;
-    font-size: 22px;
-    margin-top: 5px;
+.stat strong{
+    display:block;
+    font-size:20px;
+    margin-top:5px;
 }
 
-.formulario {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #0002;
-    margin-bottom: 15px;
+button{
+    border:0;
+    border-radius:10px;
+    padding:12px 15px;
+    font-size:15px;
+    cursor:pointer;
 }
 
-input, button {
-    width: 100%;
-    padding: 12px;
-    margin: 5px 0;
-    border-radius: 8px;
-    border: 1px solid #bbb;
-    font-size: 16px;
+.primary{
+    background:#087ea4;
+    color:white;
 }
 
-button {
-    background: #0077b6;
-    color: white;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
+.success{
+    background:#20a05a;
+    color:white;
 }
 
-button:hover {
-    background: #005f8f;
+.danger{
+    background:#d94a4a;
+    color:white;
 }
 
-.cliente {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 8px #0002;
+.secondary{
+    background:#e5edf0;
+    color:#123;
 }
 
-.cliente h3 {
-    margin: 0 0 5px;
+input,select{
+    width:100%;
+    padding:12px;
+    margin:6px 0 12px;
+    border:1px solid #ccd9de;
+    border-radius:9px;
+    font-size:16px;
 }
 
-.pagado {
-    color: #16803c;
-    font-weight: bold;
+label{
+    font-weight:bold;
 }
 
-.pendiente {
-    color: #d62828;
-    font-weight: bold;
+.client{
+    border:1px solid #dbe7eb;
+    border-radius:12px;
+    padding:14px;
+    margin-top:10px;
 }
 
-.botones {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
+.client-name{
+    font-size:19px;
+    font-weight:bold;
 }
 
-.btn-pagar {
-    background: #16803c;
+.amount{
+    font-size:18px;
+    margin:6px 0;
 }
 
-.btn-eliminar {
-    background: #d62828;
+.paid{
+    color:#168447;
+    font-weight:bold;
 }
 
-.vacio {
-    text-align: center;
-    padding: 30px;
-    color: #777;
+.pending{
+    color:#c0392b;
+    font-weight:bold;
 }
 
-@media(max-width:600px) {
-    .resumen {
-        grid-template-columns: 1fr;
-    }
+.actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:10px;
+}
+
+.hidden{
+    display:none;
+}
+
+.month-title{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.empty{
+    text-align:center;
+    padding:25px;
+    color:#667;
 }
 </style>
 </head>
@@ -145,210 +161,340 @@ button:hover {
 
 <header>
     <h1>🏊 DF POOLS</h1>
-    <p>Control de clientes y cobranzas</p>
+    <p>Control de clientes y cobros</p>
 </header>
 
 <div class="container">
 
-    <div class="resumen">
-        <div class="tarjeta">
+<div class="card">
+    <div class="month-title" id="monthTitle"></div>
+
+    <div class="stats">
+        <div class="stat">
             Clientes
-            <strong id="cantidad">0</strong>
+            <strong id="totalClients">0</strong>
         </div>
 
-        <div class="tarjeta">
+        <div class="stat">
+            Pendientes
+            <strong id="totalPending">$0</strong>
+        </div>
+
+        <div class="stat">
             Cobrado
-            <strong id="cobrado">$0</strong>
+            <strong id="totalPaid">$0</strong>
         </div>
 
-        <div class="tarjeta">
-            Pendiente
-            <strong id="pendiente">$0</strong>
+        <div class="stat">
+            Total del mes
+            <strong id="totalMonth">$0</strong>
         </div>
     </div>
+</div>
 
-    <div class="formulario">
-        <h2>➕ Nuevo cliente</h2>
+<div class="card">
+    <button class="primary" onclick="showAdd()">➕ Agregar cliente</button>
+</div>
 
-        <input id="nombre" type="text" placeholder="Nombre del cliente">
+<div class="card hidden" id="formCard">
 
-        <input id="telefono" type="text" placeholder="Teléfono">
+    <h2 id="formTitle">Nuevo cliente</h2>
 
-        <input id="importe" type="number" placeholder="Importe mensual">
+    <label>Nombre</label>
+    <input id="name" placeholder="Nombre del cliente">
 
-        <button onclick="agregarCliente()">Agregar cliente</button>
-    </div>
+    <label>Teléfono</label>
+    <input id="phone" placeholder="Teléfono">
 
-    <div class="formulario">
-        <input id="buscar" type="text" placeholder="🔎 Buscar cliente..." oninput="mostrarClientes()">
-    </div>
+    <label>Importe mensual</label>
+    <input id="amount" type="number" placeholder="Ej: 100000">
 
-    <div id="lista"></div>
+    <button class="primary" onclick="saveClient()">Guardar</button>
+    <button class="secondary" onclick="hideForm()">Cancelar</button>
+</div>
+
+<div class="card">
+    <input id="search" placeholder="🔎 Buscar cliente..." oninput="render()">
+</div>
+
+<div class="card">
+    <h2>Clientes</h2>
+    <div id="clients"></div>
+</div>
+
+<div class="card">
+    <h2>Historial</h2>
+
+    <label>Consultar mes</label>
+    <input id="historyMonth" type="month" onchange="renderHistory()">
+
+    <div id="history"></div>
+</div>
 
 </div>
 
 <script>
 
-let clientes = JSON.parse(localStorage.getItem("dfpools_clientes")) || [];
+let clients = JSON.parse(localStorage.getItem("dfpools_clients") || "[]");
 
-function guardar() {
-    localStorage.setItem("dfpools_clientes", JSON.stringify(clientes));
+let payments = JSON.parse(localStorage.getItem("dfpools_payments") || "[]");
+
+let editingId = null;
+
+const today = new Date();
+
+const currentMonth =
+    today.getFullYear() + "-" +
+    String(today.getMonth()+1).padStart(2,"0");
+
+document.getElementById("historyMonth").value = currentMonth;
+
+document.getElementById("monthTitle").textContent =
+    "📅 " + today.toLocaleDateString("es-AR",{
+        month:"long",
+        year:"numeric"
+    });
+
+function money(value){
+    return new Intl.NumberFormat("es-AR",{
+        style:"currency",
+        currency:"ARS",
+        maximumFractionDigits:0
+    }).format(value || 0);
 }
 
-function dinero(numero) {
-    return "$" + Number(numero).toLocaleString("es-AR");
+function saveData(){
+    localStorage.setItem(
+        "dfpools_clients",
+        JSON.stringify(clients)
+    );
+
+    localStorage.setItem(
+        "dfpools_payments",
+        JSON.stringify(payments)
+    );
 }
 
-function agregarCliente() {
+function showAdd(){
 
-    let nombre = document.getElementById("nombre").value.trim();
-    let telefono = document.getElementById("telefono").value.trim();
-    let importe = Number(document.getElementById("importe").value);
+    editingId = null;
 
-    if (!nombre) {
+    document.getElementById("formTitle").textContent =
+        "Nuevo cliente";
+
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("amount").value = "";
+
+    document.getElementById("formCard")
+        .classList.remove("hidden");
+}
+
+function hideForm(){
+    document.getElementById("formCard")
+        .classList.add("hidden");
+}
+
+function saveClient(){
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    const amount =
+        Number(document.getElementById("amount").value);
+
+    if(!name){
         alert("Poné el nombre del cliente.");
         return;
     }
 
-    if (!importe || importe <= 0) {
+    if(!amount || amount <= 0){
         alert("Poné un importe mensual válido.");
         return;
     }
 
-    clientes.push({
-        id: Date.now(),
-        nombre: nombre,
-        telefono: telefono,
-        importe: importe,
-        pagos: []
-    });
+    if(editingId){
 
-    guardar();
+        const client =
+            clients.find(c => c.id === editingId);
 
-    document.getElementById("nombre").value = "";
-    document.getElementById("telefono").value = "";
-    document.getElementById("importe").value = "";
+        if(client){
 
-    mostrarClientes();
-}
+            if(Number(client.amount) !== amount){
 
-function pagar(id) {
+                client.priceHistory =
+                    client.priceHistory || [];
 
-    let cliente = clientes.find(c => c.id === id);
+                client.priceHistory.push({
+                    amount: amount,
+                    from: currentMonth
+                });
+            }
 
-    if (!cliente) return;
-
-    let hoy = new Date();
-
-    let mes = hoy.getFullYear() + "-" +
-              String(hoy.getMonth() + 1).padStart(2, "0");
-
-    if (cliente.pagos.includes(mes)) {
-        alert("Este cliente ya figura como pagado este mes.");
-        return;
-    }
-
-    cliente.pagos.push(mes);
-
-    guardar();
-    mostrarClientes();
-}
-
-function eliminar(id) {
-
-    if (!confirm("¿Querés eliminar este cliente?")) return;
-
-    clientes = clientes.filter(c => c.id !== id);
-
-    guardar();
-    mostrarClientes();
-}
-
-function estaPagado(cliente) {
-
-    let hoy = new Date();
-
-    let mes = hoy.getFullYear() + "-" +
-              String(hoy.getMonth() + 1).padStart(2, "0");
-
-    return cliente.pagos.includes(mes);
-}
-
-function mostrarClientes() {
-
-    let lista = document.getElementById("lista");
-    let buscar = document.getElementById("buscar").value.toLowerCase();
-
-    lista.innerHTML = "";
-
-    let filtrados = clientes.filter(c =>
-        c.nombre.toLowerCase().includes(buscar)
-    );
-
-    let cobrado = 0;
-    let pendiente = 0;
-
-    clientes.forEach(c => {
-
-        if (estaPagado(c)) {
-            cobrado += Number(c.importe);
-        } else {
-            pendiente += Number(c.importe);
+            client.name = name;
+            client.phone = phone;
+            client.amount = amount;
         }
 
-    });
+    }else{
 
-    document.getElementById("cantidad").textContent = clientes.length;
-    document.getElementById("cobrado").textContent = dinero(cobrado);
-    document.getElementById("pendiente").textContent = dinero(pendiente);
+        clients.push({
 
-    if (filtrados.length === 0) {
-        lista.innerHTML = '<div class="vacio">No hay clientes.</div>';
-        return;
+            id: Date.now(),
+
+            name:name,
+
+            phone:phone,
+
+            amount:amount,
+
+            created:currentMonth,
+
+            priceHistory:[
+                {
+                    amount:amount,
+                    from:currentMonth
+                }
+            ]
+
+        });
     }
 
-    filtrados.forEach(cliente => {
+    saveData();
 
-        let pagado = estaPagado(cliente);
+    hideForm();
 
-        let div = document.createElement("div");
+    render();
+}
 
-        div.className = "cliente";
+function editClient(id){
 
-        div.innerHTML = `
-            <h3>${cliente.nombre}</h3>
+    const client =
+        clients.find(c => c.id === id);
 
-            ${cliente.telefono ?
-            `<div>📞 ${cliente.telefono}</div>` : ""}
+    if(!client)return;
 
-            <div>💰 Mensual: <strong>${dinero(cliente.importe)}</strong></div>
+    editingId = id;
 
-            <div class="${pagado ? "pagado" : "pendiente"}">
-                ${pagado ? "✅ PAGÓ ESTE MES" : "❌ PENDIENTE"}
-            </div>
+    document.getElementById("formTitle").textContent =
+        "Editar cliente";
 
-            <div class="botones">
+    document.getElementById("name").value =
+        client.name;
 
-                <button class="btn-pagar"
-                    onclick="pagar(${cliente.id})">
-                    ${pagado ? "✅ Ya pagó" : "💵 Marcar pagado"}
-                </button>
+    document.getElementById("phone").value =
+        client.phone || "";
 
-                <button class="btn-eliminar"
-                    onclick="eliminar(${cliente.id})">
-                    🗑️ Eliminar
-                </button>
+    document.getElementById("amount").value =
+        client.amount;
 
-            </div>
-        `;
+    document.getElementById("formCard")
+        .classList.remove("hidden");
 
-        lista.appendChild(div);
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
     });
 }
 
-mostrarClientes();
+function deleteClient(id){
 
-</script>
+    const client =
+        clients.find(c => c.id === id);
 
-</body>
-  </html>
+    if(!client)return;
+
+    if(confirm(
+        "¿Eliminar a " +
+        client.name +
+        "?"
+    )){
+
+        clients =
+            clients.filter(c => c.id !== id);
+
+        payments =
+            payments.filter(p => p.clientId !== id);
+
+        saveData();
+
+        render();
+    }
+}
+
+function getPriceForMonth(client, month){
+
+    if(!client.priceHistory){
+        return client.amount;
+    }
+
+    let selected =
+        client.priceHistory[0];
+
+    for(const price of client.priceHistory){
+
+        if(price.from <= month){
+            selected = price;
+        }
+    }
+
+    return selected.amount;
+}
+
+function isPaid(clientId,month){
+
+    return payments.some(
+        p =>
+        p.clientId === clientId &&
+        p.month === month
+    );
+}
+
+function markPaid(id){
+
+    if(isPaid(id,currentMonth)){
+
+        payments =
+            payments.filter(
+                p =>
+                !(
+                    p.clientId === id &&
+                    p.month === currentMonth
+                )
+            );
+
+    }else{
+
+        payments.push({
+
+            clientId:id,
+
+            month:currentMonth,
+
+            date:new Date().toISOString()
+
+        });
+    }
+
+    saveData();
+
+    render();
+}
+
+function render(){
+
+    const container =
+        document.getElementById("clients");
+
+    const search =
+        document.getElementById("search")
+            .value
+            .toLowerCase();
+
+    const filtered =
+        clients.filter(c =>
+            c.name.toLowerCase()
+               
