@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DF Pools</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef7fb;
+    color: #17324d;
+}
+
+header {
+    background: linear-gradient(135deg, #0077b6, #00b4d8);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 3px 10px #0003;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+header p {
+    margin: 5px 0 0;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 15px;
+}
+
+.resumen {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tarjeta {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px #0002;
+}
+
+.tarjeta strong {
+    display: block;
+    font-size: 22px;
+    margin-top: 5px;
+}
+
+.formulario {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0002;
+    margin-bottom: 15px;
+}
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    font-size: 16px;
+}
+
+button {
+    background: #0077b6;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #005f8f;
+}
+
+.cliente {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px #0002;
+}
+
+.cliente h3 {
+    margin: 0 0 5px;
+}
+
+.pagado {
+    color: #16803c;
+    font-weight: bold;
+}
+
+.pendiente {
+    color: #d62828;
+    font-weight: bold;
+}
+
+.botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-pagar {
+    background: #16803c;
+}
+
+.btn-eliminar {
+    background: #d62828;
+}
+
+.vacio {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+
+@media(max-width:600px) {
+    .resumen {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🏊 DF POOLS</h1>
+    <p>Control de clientes y cobranzas</p>
+</header>
+
+<div class="container">
+
+    <div class="resumen">
+        <div class="tarjeta">
+            Clientes
+            <strong id="cantidad">0</strong>
+        </div>
+
+        <div class="tarjeta">
+            Cobrado
+            <strong id="cobrado">$0</strong>
+        </div>
+
+        <div class="tarjeta">
+            Pendiente
+            <strong id="pendiente">$0</strong>
+        </div>
+    </div>
+
+    <div class="formulario">
+        <h2>➕ Nuevo cliente</h2>
+
+        <input id="nombre" type="text" placeholder="Nombre del cliente">
+
+        <input id="telefono" type="text" placeholder="Teléfono">
+
+        <input id="importe" type="number" placeholder="Importe mensual">
+
+        <button onclick="agregarCliente()">Agregar cliente</button>
+    </div>
+
+    <div class="formulario">
+        <input id="buscar" type="text" placeholder="🔎 Buscar cliente..." oninput="mostrarClientes()">
+    </div>
+
+    <div id="lista"></div>
+
+</div>
+
+<script>
+
+let clientes = JSON.parse(localStorage.getItem("dfpools_clientes")) || [];
+
+function guardar() {
+    localStorage.setItem("dfpools_clientes", JSON.stringify(clientes));
+}
+
+function dinero(numero) {
+    return "$" + Number(numero).toLocaleString("es-AR");
+}
+
+function agregarCliente() {
+
+    let nombre = document.getElementById("nombre").value.trim();
+    let telefono = document.getElementById("telefono").value.trim();
+    let importe = Number(document.getElementById("importe").value);
+
+    if (!nombre) {
+        alert("Poné el nombre del cliente.");
+        return;
+    }
+
+    if (!importe || importe <= 0) {
+        alert("Poné un importe mensual válido.");
+        return;
+    }
+
+    clientes.push({
+        id: Date.now(),
+        nombre: nombre,
+        telefono: telefono,
+        importe: importe,
+        pagos: []
+    });
+
+    guardar();
+
+    document.getElementById("nombre").value = "";
+    document.getElementById("telefono").value = "";
+    document.getElementById("importe").value = "";
+
+    mostrarClientes();
+}
+
+function pagar(id) {
+
+    let cliente = clientes.find(c => c.id === id);
+
+    if (!cliente) return;
+
+    let hoy = new Date();
+
+    let mes = hoy.getFullYear() + "-" +
+              String(hoy.getMonth() + 1).padStart(2, "0");
+
+    if (cliente.pagos.includes(mes)) {
+        alert("Este cliente ya figura como pagado este mes.");
+        return;
+    }
+
+    cliente.pagos.push(mes);
+
+    guardar();
+    mostrarClientes();
+}
+
+function eliminar(id) {
+
+    if (!confirm("¿Querés eliminar este cliente?")) return;
+
+    clientes = clientes.filter(c => c.id !== id);
+
+    guardar();
+    mostrarClientes();
+}
+
+function estaPagado(cliente) {
+
+    let hoy = new Date();
+
+    let mes = hoy.getFullYear() + "-" +
+              String(hoy.getMonth() + 1).padStart(2, "0");
+
+    return cliente.pagos.includes(mes);
+}
+
+function mostrarClientes() {
+
+    let lista = document.getElementById("lista");
+    let buscar = document.getElementById("buscar").value.toLowerCase();
+
+    lista.innerHTML = "";
+
+    let filtrados = clientes.filter(c =>
+        c.nombre.toLowerCase().includes(buscar)
+    );
+
+    let cobrado = 0;
+    let pendiente = 0;
+
+    clientes.forEach(c => {
+
+        if (estaPagado(c)) {
+            cobrado += Number(c.importe);
+        } else {
+            pendiente += Number(c.importe);
+        }
+
+    });
+
+    document.getElementById("cantidad").textContent = clientes.length;
+    document.getElementById("cobrado").textContent = dinero(cobrado);
+    document.getElementById("pendiente").textContent = dinero(pendiente);
+
+    if (filtrados.length === 0) {
+        lista.innerHTML = '<div class="vacio">No hay clientes.</div>';
+        return;
+    }
+
+    filtrados.forEach(cliente => {
+
+        let pagado = estaPagado(cliente);
+
+        let div = document.createElement("div");
+
+        div.className = "cliente";
+
+        div.innerHTML = `
+            <h3>${cliente.nombre}</h3>
+
+            ${cliente.telefono ?
+            `<div>📞 ${cliente.telefono}</div>` : ""}
+
+            <div>💰 Mensual: <strong>${dinero(cliente.importe)}</strong></div>
+
+            <div class="${pagado ? "pagado" : "pendiente"}">
+                ${pagado ? "✅ PAGÓ ESTE MES" : "❌ PENDIENTE"}
+            </div>
+
+            <div class="botones">
+
+                <button class="btn-pagar"
+                    onclick="pagar(${cliente.id})">
+                    ${pagado ? "✅ Ya pagó" : "💵 Marcar pagado"}
+                </button>
+
+                <button class="btn-eliminar"
+                    onclick="eliminar(${cliente.id})">
+                    🗑️ Eliminar
+                </button>
+
+            </div>
+        `;
+
+        lista.appendChild(div);
+    });
+}
+
+mostrarClientes();
+
+</script>
+
+</body>
+  </html>
