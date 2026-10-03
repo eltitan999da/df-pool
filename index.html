@@ -498,3 +498,99 @@ function render(){
         clients.filter(c =>
             c.name.toLowerCase()
                
+        );
+}
+
+function renderHistory(){
+
+    const month =
+        document.getElementById("historyMonth").value;
+
+    const container =
+        document.getElementById("history");
+
+    container.innerHTML = "";
+
+    if(!month){
+        return;
+    }
+
+    if(clients.length === 0){
+
+        container.innerHTML =
+            '<div class="empty">Todavía no hay clientes.</div>';
+
+        return;
+    }
+
+    let total = 0;
+    let paidTotal = 0;
+    let pendingTotal = 0;
+
+    clients.forEach(client => {
+
+        const price =
+            getPriceForMonth(client, month);
+
+        const paid =
+            isPaid(client.id, month);
+
+        total += price;
+
+        if(paid){
+            paidTotal += price;
+        }else{
+            pendingTotal += price;
+        }
+
+        const div =
+            document.createElement("div");
+
+        div.className = "client";
+
+        div.innerHTML = `
+            <div class="client-name">
+                ${escapeHTML(client.name)}
+            </div>
+
+            <div>${money(price)}</div>
+
+            <div class="${paid ? "paid" : "pending"}">
+                ${paid ? "✅ Pagado" : "❌ Pendiente"}
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+
+    const summary =
+        document.createElement("div");
+
+    summary.className = "client";
+
+    summary.innerHTML = `
+        <strong>Resumen</strong>
+        <p>Total: ${money(total)}</p>
+        <p class="paid">Cobrado: ${money(paidTotal)}</p>
+        <p class="pending">Pendiente: ${money(pendingTotal)}</p>
+    `;
+
+    container.prepend(summary);
+}
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+render();
+
+</script>
+
+</body>
+</html>
